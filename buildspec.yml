@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - pip install snowflake-connector-python
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+      - unzip terraform.zip
+      - mv terraform /usr/local/bin/
+      - terraform -version
+
+  pre_build:
+    commands:
+      - cd terraform
+      - terraform init
+
+  build:
+    commands:
+      - terraform apply -auto-approve
+      - cd ../scripts
+      - python insert_to_snowflake.py
+
+env:
+  secrets-manager:
+    SNOWFLAKE_USER: jianjundai
+    SNOWFLAKE_PASSWORD: MOTw1986c@#$()
+    SNOWFLAKE_ACCOUNT: jl50342
+    SNOWFLAKE_DATABASE: snowflake_learning_db
+    SNOWFLAKE_WAREHOUSE: COMPUTE_WH
